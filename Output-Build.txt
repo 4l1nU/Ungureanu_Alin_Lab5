@@ -1,0 +1,6 @@
+﻿Build started...
+1>------ Build started: Project: Ungureanu_Alin_Lab5, Configuration: Debug Any CPU ------
+2>------ Build started: Project: AutoLotModel, Configuration: Debug Any CPU ------
+1>  Ungureanu_Alin_Lab5 -> C:\Facultate\An 3\Medii Programare\Laboratoare\Aplicatii\Ungureanu_Alin_Lab5\Ungureanu_Alin_Lab5\bin\Debug\Ungureanu_Alin_Lab5.exe
+2>  AutoLotModel -> C:\Facultate\An 3\Medii Programare\Laboratoare\Aplicatii\Ungureanu_Alin_Lab5\AutoLotModel\bin\Debug\AutoLotModel.dll
+========== Build: 2 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========
