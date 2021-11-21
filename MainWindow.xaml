@@ -11,19 +11,61 @@
         <CollectionViewSource x:Key="customerViewSource" d:DesignSource="{d:DesignInstance {x:Type AutoLotModel:Customer}, CreateList=True}"/>
         <CollectionViewSource x:Key="inventoryViewSource" d:DesignSource="{d:DesignInstance {x:Type AutoLotModel:Invetory}, CreateList=True}"/>
         <CollectionViewSource x:Key="customerOrdersViewSource" Source="{Binding Orders, Source={StaticResource customerViewSource}}"/>
+        <ControlTemplate x:Key="validationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key ="BigGreenButton" TargetType="Button">
+            <Setter Property = "FontSize" Value ="18"/>
+            <Setter Property = "Height" Value = "47"/>
+            <Setter Property = "Width" Value = "110"/>
+            <Setter Property = "Background" Value = "DarkGreen"/>
+            <Setter Property = "Foreground" Value = "Yellow"/>
+        </Style>
+        <Style x:Key="gbActions" TargetType="Button">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property = "Background" Value = "Purple"/>
+        </Style>
     </Window.Resources>
     <Grid Margin="0,0,-49.4,-29.6">
         <GroupBox x:Name="gbOperations" Button.Click="gbOperations_Click" Header="" HorizontalAlignment="Left" Height="115" Margin="10,57,0,0" VerticalAlignment="Top" Width="128">
             <StackPanel HorizontalAlignment="Left" Height="63" Margin="10,10,-2,0" VerticalAlignment="Top" Width="108">
-                <Button x:Name="btnAdd" Content="New"  Height="20" Margin="0,0,10,0" Click="btnAdd_Click" />
-                <Button x:Name="btnEdit" Content="Edit" Height="20" Margin="0,0,10,0" Click="btnEdit_Click"/>
-                <Button x:Name="btnDelete" Content="Delete" Margin="0,0,10,0" Click="btnDelete_Click" Height="31" />
+                <Button x:Name="btnAdd" Content="New"  Height="20" Margin="0,0,10,0" Click="btnAdd_Click" Style="{StaticResource BigGreenButton}" />
+                <Button x:Name="btnEdit" Content="Edit" Height="20" Margin="0,0,10,0" Click="btnEdit_Click" Style="{StaticResource BigGreenButton}"/>
+                <Button x:Name="btnDelete" Content="Delete" Margin="0,0,10,0" Click="btnDelete_Click" Height="31" Style="{StaticResource BigGreenButton}"/>
             </StackPanel>
         </GroupBox>
         <GroupBox x:Name="gbActions" Header="" HorizontalAlignment="Left" Height="101" Margin="10,259,0,0" VerticalAlignment="Top" Width="128">
             <StackPanel HorizontalAlignment="Left" Width="98" Margin="20,23,-2,6.4">
-                <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="btnSave_Click" Height="28" Margin="0,0,-0.4,0"/>
-                <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="btnCancel_Click" Margin="0,0,-0.4,0" Height="27"/>
+                <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="btnSave_Click" Height="28" Margin="0,0,-0.4,0">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn = "{StaticResource gbActions}">
+                            <Setter Property="IsEnabled" Value="false" />
+                            <Style.Triggers>
+                                <!--Butonul Save va fi inactiv daca exista erori de validare -->
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ElementName=lastNameTextBox, Path=(Validation.HasError)}" Value="false" />
+                                        <Condition Binding="{Binding ElementName=firstNameTextBox, Path=(Validation.HasError)}" Value="false" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="true" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="98" Click="btnCancel_Click" Margin="0,0,-0.4,0" Height="27" Style="{StaticResource gbActions}"/>
             </StackPanel>
         </GroupBox>
         <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="320" Margin="215,40,0,0" VerticalAlignment="Top" Width="494" Grid.RowSpan="2" >
@@ -56,9 +98,9 @@
                         <Label Content="Cust Id:" Grid.Column="0" HorizontalAlignment="Left" Margin="3,3,0,3" Grid.Row="0" VerticalAlignment="Center" Grid.RowSpan="2"/>
                         <TextBox x:Name="custIdTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="3.4,5,-0.2,3" Grid.Row="0" Text="{Binding CustId, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120" IsEnabled="False" Grid.RowSpan="2"/>
                         <Label Content="First Name:" Grid.Column="0" HorizontalAlignment="Left" Margin="3,3,0,3" Grid.Row="2" VerticalAlignment="Center"/>
-                        <TextBox x:Name="firstNameTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="4.6,5,-0.6,3" Grid.Row="2" Text="{Binding FirstName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                        <TextBox x:Name="firstNameTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="4.6,5,-0.6,3" Grid.Row="2" Text="{Binding FirstName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}"/>
                         <Label Content="Last Name:" Grid.Column="0" HorizontalAlignment="Left" Margin="3,3,0,3" Grid.Row="3" VerticalAlignment="Center"/>
-                        <TextBox x:Name="lastNameTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="3.2,4,0,4" Grid.Row="3" Text="{Binding LastName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120"/>
+                        <TextBox x:Name="lastNameTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="24" Margin="3.2,4,0,4" Grid.Row="3" Text="{Binding LastName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="120" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}"/>
                     </Grid>
                     <Button x:Name="btnPrev" Content="Previous" HorizontalAlignment="Left" Margin="10,161,0,0" VerticalAlignment="Top" Width="75" Grid.ColumnSpan="3" Click="btnPrev_Click" RenderTransformOrigin="0.329,0.484" Height="19" Grid.Column="1"/>
                     <Button x:Name="btnNext" Content="Next" HorizontalAlignment="Left" Margin="196.8,161,0,0" VerticalAlignment="Top" Width="75" Grid.Column="3" Click="btnNext_Click" Height="19"/>
